@@ -9,9 +9,13 @@ firebase.initializeApp({
             appId: "1:252926034214:web:f07523455ac9e16ed641e7"
   });
 
-        const signupForm = document.getElementById('signup-form');
-        const signupEmail = document.getElementById('signup-email');
-        const signupPassword = document.getElementById('signup-password');
+  var db = firebase.firestore();
+
+        const cadastroForm = document.getElementById('cadastro-form');
+        const cadastroCpf = document.getElementById('cadastro-cpf');
+        const cadastroTelefone = document.getElementById('cadastro-telefone');
+        const cadastroEmail = document.getElementById('cadastro-email');
+        const cadastroSenha = document.getElementById('cadastro-senha');
         const signupButton = document.getElementById('signup-button');
 
         const loginForm = document.getElementById('login-form');
@@ -23,17 +27,30 @@ firebase.initializeApp({
 
         // Função para lidar com o cadastro
         signupButton.addEventListener('click', () => {
-            const email = signupEmail.value;
-            const password = signupPassword.value;
+            const email = cadastroEmail.value;
+            const password = cadastroSenha.value;
 
             firebase.auth().createUserWithEmailAndPassword(email, password)
                 .then(userCredential => {
-                    message.textContent = 'Cadastro realizado com sucesso';
+                    const user = userCredential.user;
+
+                    db.collection("users").add({
+                        cpf: cadastroCpf,
+                        telefone: cadastroTelefone
+                      })
+                      .then(() => {
+                        message.textContent = 'Cadastro realizado com sucesso';
+                      })
+                      .catch((error) => {
+                        console.error("Erro ao armazenar informações adicionais: ", error);
+                      });
+                    })
+                    
                 })
                 .catch(error => {
                     message.textContent = 'Erro no cadastro: ' + error.message;
                 });
-        });
+        // });
 
         // Função para lidar com o login
         loginButton.addEventListener('click', () => {
